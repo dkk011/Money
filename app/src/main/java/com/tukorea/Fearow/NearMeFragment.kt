@@ -72,18 +72,19 @@ class NearMeFragment : Fragment(), OnMapReadyCallback {
 
                 // GeoJSON 파일 로드 및 사용자 위치가 포함된 행정구역 식별
                 try {
-                    val layer = GeoJsonLayer(googleMap, R.raw.siheung_boundary, context)
+                    val inputStream = resources.openRawResource(R.raw.siheung_boundary)
+                    val geoJsonString = inputStream.bufferedReader().use { it.readText() }
+                    val geoJsonObject = JSONObject(geoJsonString)
+                    val layer = GeoJsonLayer(googleMap, geoJsonObject)
+
                     for (feature in layer.features) {
                         val geometry = feature.geometry
                         if (geometry is GeoJsonPolygon) {
                             if (isLocationInPolygon(userLatLng, geometry.coordinates)) {
-                                // Create a new layer with only the specific feature
-                                val geoJsonString = JSONObject().apply {
+                                val singleFeatureLayer = GeoJsonLayer(googleMap, JSONObject().apply {
                                     put("type", "FeatureCollection")
                                     put("features", listOf(feature))
-                                }.toString()
-
-                                val singleFeatureLayer = GeoJsonLayer(googleMap, JSONObject(geoJsonString))
+                                })
                                 singleFeatureLayer.addLayerToMap()
                                 break
                             }
