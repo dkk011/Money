@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Money</string>
+    <string name="key_hash">H6RlXFk5At8ZKFtDg8OFV5RoTA8==</string>
+    <string name="kakao_app_key">cc9bc4fa41b0fc0fa9bae0946c178f70</string>
+    <string name="kakao_native_app_key">kakaocc9bc4fa41b0fc0fa9bae0946c178f70</string>
+    <string name="google_api_key">AIzaSyCVtAaa3kGf3CoJDmmwseAvVX8W-jJLxoc</string>
+</resources>
