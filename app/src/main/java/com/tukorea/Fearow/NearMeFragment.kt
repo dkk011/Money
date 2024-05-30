@@ -2,6 +2,7 @@ package com.tukorea.Fearow
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -76,6 +77,13 @@ class NearMeFragment : Fragment(), OnMapReadyCallback {
                     val geoJsonString = inputStream.bufferedReader().use { it.readText() }
                     val geoJsonObject = JSONObject(geoJsonString)
                     val layer = GeoJsonLayer(googleMap, geoJsonObject)
+
+                    // 행정 구역을 지도에 표시
+                    layer.addLayerToMap()
+
+                    // 각 행정 구역의 스타일 설정
+                    layer.defaultPolygonStyle.fillColor = Color.argb(50, 255, 0, 0)
+                    layer.defaultPolygonStyle.strokeWidth = 0.5F
 
                     for (feature in layer.features) {
                         val geometry = feature.geometry
