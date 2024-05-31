@@ -4,6 +4,8 @@ import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.KakaoSdk
@@ -19,6 +21,16 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val spinner: Spinner = findViewById(R.id.spinner)
+        ArrayAdapter.createFromResource(
+            this,
+            R.array.국적, // arrays.xml 파일에서 정의한 항목들
+            android.R.layout.simple_spinner_item // 스피너에 표시할 레이아웃 스타일
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
+        }
+
         KakaoSdk.init(this, getString(R.string.kakao_app_key))
 
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
@@ -31,7 +43,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        binding.btnKakao.setOnClickListener {
+        binding.btnLogin.setOnClickListener {
             //이전에 로그인 했던 토큰이 있는지 확인
             UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
                 //토큰이 없고 에러 발생 시 에러를 로그로 찍음
