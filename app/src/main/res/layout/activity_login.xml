@@ -9,8 +9,8 @@
     tools:context=".MainActivity">
 
     <ImageView
-        android:layout_width="246dp"
-        android:layout_height="226dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_marginTop="20dp"
         android:src="@drawable/money"
         app:layout_constraintBottom_toBottomOf="parent"
