@@ -1,56 +1,84 @@
 package com.tukorea.Fearow
 
-import android.content.Intent
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import org.json.JSONObject
-import java.io.InputStream
 
 class LocationActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: LocationAdapter
-    private lateinit var locationList: ArrayList<String>
-    private lateinit var geoJsonData: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_location)
 
-        recyclerView = findViewById(R.id.recyclerViewLocation)
+        recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-
-        geoJsonData = loadGeoJson()
-        locationList = parseGeoJson(geoJsonData)
-        adapter = LocationAdapter(locationList) { location ->
-            onLocationSelected(location)
-        }
+        adapter = LocationAdapter()
         recyclerView.adapter = adapter
-    }
 
-    private fun loadGeoJson(): String {
-        val inputStream: InputStream = resources.openRawResource(R.raw.siheung_boundary)
-        return inputStream.bufferedReader().use { it.readText() }
-    }
-
-    private fun parseGeoJson(jsonData: String): ArrayList<String> {
-        val locations = ArrayList<String>()
-        val jsonObject = JSONObject(jsonData)
-        val features = jsonObject.getJSONArray("features")
-        for (i in 0 until features.length()) {
-            val properties = features.getJSONObject(i).getJSONObject("properties")
-            val admNm = properties.getString("adm_nm")
-            locations.add(admNm)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+        } else {
+            fetchLocationAndDisplay()
         }
-        return locations
     }
 
-    private fun onLocationSelected(location: String) {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra("selectedLocation", location)
-        startActivity(intent)
-        finish()
+    private fun fetchLocationAndDisplay() {
+        val locationManager = getSystemService(LOCATION_SERVICE) as android.location.LocationManager
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                PERMISSION_REQUEST_CODE
+            )
+            return
+        }
+        locationManager.requestLocationUpdates(android.location.LocationManager.GPS_PROVIDER, 0, 0f) { location ->
+            updateLocationList(location, this)
+            locationManager.removeUpdates { }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fetchLocationAndDisplay()
+            } else {
+                // 권한이 거부된 경우 사용자에게 메시지 표시 또는 다른 대응
+            }
+        }
+    }
+
+    private fun updateLocationList(location: Location, context: Context) {
+        val sortedLocations = LocationUtils.calculateDistance(context, location.latitude, location.longitude)
+        adapter.updateData(sortedLocations.map { it.first.admNm })
+    }
+
+    companion object {
+        private const val PERMISSION_REQUEST_CODE = 1001
     }
 }

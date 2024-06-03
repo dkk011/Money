@@ -6,31 +6,30 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class LocationAdapter(
-    private val locationList: List<String>,
-    private val onItemClick: (String) -> Unit
-) : RecyclerView.Adapter<LocationAdapter.LocationViewHolder>() {
+class LocationAdapter : RecyclerView.Adapter<LocationAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocationViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_location, parent, false)
-        return LocationViewHolder(view)
+    private var locations: List<String> = listOf()
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(android.R.layout.simple_list_item_1, parent, false)
+        return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: LocationViewHolder, position: Int) {
-        val location = locationList[position]
-        holder.bind(location)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(locations[position])
     }
 
-    override fun getItemCount() = locationList.size
+    override fun getItemCount(): Int = locations.size
 
-    inner class LocationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val locationName: TextView = itemView.findViewById(R.id.locationName)
+    fun updateData(newLocations: List<String>) {
+        locations = newLocations
+        notifyDataSetChanged()
+    }
 
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val textView: TextView = itemView.findViewById(android.R.id.text1)
         fun bind(location: String) {
-            locationName.text = location
-            itemView.setOnClickListener {
-                onItemClick(location)
-            }
+            textView.text = location
         }
     }
 }
