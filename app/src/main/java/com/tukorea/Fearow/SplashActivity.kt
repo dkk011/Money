@@ -21,14 +21,12 @@ class SplashActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             // 로그인 상태 확인
             UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
-                if (tokenInfo != null) {
-                    // 토큰이 존재하면 MainActivity로 이동
-                    startActivity(Intent(this, MainActivity::class.java))
-                } else {
-                    // 토큰이 없거나 오류가 발생하면 LoginActivity로 이동
+                if (error != null || tokenInfo == null) {
                     startActivity(Intent(this, LoginActivity::class.java))
+                } else {
+                    startActivity(Intent(this, MainActivity::class.java))
                 }
-                finish() // SplashActivity 종료
+                finish()
             }
         }, 1000) // 2000 milliseconds = 2 seconds
     }

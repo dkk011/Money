@@ -8,18 +8,22 @@ import com.tukorea.Fearow.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var selectedLocation: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Set initial fragment
-        replaceFragment(HomeFragment())
+        // 선택된 위치 정보 가져오기
+        selectedLocation = intent.getStringExtra("selectedLocation") ?: "Unknown"
+
+        // 초기 프래그먼트 설정
+        replaceFragment(HomeFragment.newInstance(selectedLocation))
 
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> replaceFragment(HomeFragment())
+                R.id.nav_home -> replaceFragment(HomeFragment.newInstance(selectedLocation))
                 R.id.nav_near_me -> replaceFragment(NearMeFragment())
                 R.id.nav_exchange_rate -> replaceFragment(ExchangeRateFragment())
                 R.id.nav_profile -> replaceFragment(ProfileFragment())

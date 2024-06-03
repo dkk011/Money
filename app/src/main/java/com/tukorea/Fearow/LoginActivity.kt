@@ -38,7 +38,7 @@ class LoginActivity : AppCompatActivity() {
                 Log.e(TAG, "카카오 로그인 실패", error)
             } else if (token != null) {
                 Log.i(TAG, "카카오 로그인 성공 ${token.accessToken}")
-                startActivity(Intent(this, MainActivity::class.java))
+                startActivity(Intent(this, LocationActivity::class.java))
                 finish()
             }
         }
