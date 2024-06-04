@@ -6,30 +6,32 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class LocationAdapter : RecyclerView.Adapter<LocationAdapter.ViewHolder>() {
+class LocationAdapter(
+    private val locationList: ArrayList<Pair<String, Double>>,
+    private val onClick: (Pair<String, Double>) -> Unit
+) : RecyclerView.Adapter<LocationAdapter.LocationViewHolder>() {
 
-    private var locations: List<String> = listOf()
+    inner class LocationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val locationName: TextView = itemView.findViewById(R.id.locationName)
+        val distance: TextView = itemView.findViewById(R.id.distance)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(android.R.layout.simple_list_item_1, parent, false)
-        return ViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(locations[position])
-    }
-
-    override fun getItemCount(): Int = locations.size
-
-    fun updateData(newLocations: List<String>) {
-        locations = newLocations
-        notifyDataSetChanged()
-    }
-
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val textView: TextView = itemView.findViewById(android.R.id.text1)
-        fun bind(location: String) {
-            textView.text = location
+        fun bind(location: Pair<String, Double>) {
+            locationName.text = location.first
+            distance.text = "${location.second} m"
+            itemView.setOnClickListener { onClick(location) }
         }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocationViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_location, parent, false)
+        return LocationViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: LocationViewHolder, position: Int) {
+        holder.bind(locationList[position])
+    }
+
+    override fun getItemCount(): Int {
+        return locationList.size
     }
 }
