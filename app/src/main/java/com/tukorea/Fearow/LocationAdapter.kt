@@ -13,13 +13,17 @@ class LocationAdapter(
 
     inner class LocationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val locationName: TextView = itemView.findViewById(R.id.locationName)
-        val distance: TextView = itemView.findViewById(R.id.distance)
 
         fun bind(location: Pair<String, Double>) {
             locationName.text = location.first
-            distance.text = "${location.second} m"
             itemView.setOnClickListener { onClick(location) }
         }
+    }
+
+    fun updateData(newLocationList: List<Pair<String, Double>>) {
+        locationList.clear()
+        locationList.addAll(newLocationList)
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocationViewHolder {

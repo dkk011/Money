@@ -7,8 +7,13 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -19,35 +24,67 @@ class LocationActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: LocationAdapter
     private lateinit var locationList: ArrayList<Pair<String, Pair<Double, Double>>> // Pair<위치 이름, Pair<위도, 경도>>
+    private lateinit var updatedLocationList: List<Pair<String, Double>> // Pair<위치 이름, 거리>
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var searchBar: EditText
+    private lateinit var updateLocationButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_location)
 
+        searchBar = findViewById(R.id.searchBar)
         recyclerView = findViewById(R.id.recyclerViewLocation)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        updateLocationButton = findViewById(R.id.updateLocationButton)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        // 사용자 위치 권한 확인
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        // Initialize adapter
+        adapter = LocationAdapter(ArrayList()) { location ->
+            onLocationSelected(location.first)
+        }
+        recyclerView.adapter = adapter
+
+        // Check and request location permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
-            return
+        } else {
+            getLastLocation()
         }
 
-        // 행정구역 이름과 중심 좌표 불러오기
+        // Load location data
         loadLocations()
 
-        // 현재 위치 가져오기
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                if (location != null) {
-                    updateLocationList(location)
-                } else {
+        // Set up search bar listener
+        searchBar.addTextChangedListener {
+            val query = it.toString()
+            filterLocations(query)
+        }
+
+        updateLocationButton.setOnClickListener{
+            Toast.makeText(this, "위치 새로고침", Toast.LENGTH_SHORT).show()
+            getLastLocation()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            getLastLocation()
+        }
+    }
+
+    private fun getLastLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                location?.let {
+                    updateLocationList(it)
+                } ?: run {
                     Log.d("LocationActivity", "현재 위치를 가져오지 못했습니다.")
                 }
             }
+        }
     }
 
     private fun loadLocations() {
@@ -59,48 +96,32 @@ class LocationActivity : AppCompatActivity() {
             val longitude = sharedPref.getFloat("${name}_longitude", 0.0f).toDouble()
             locationList.add(Pair(name, Pair(latitude, longitude)))
         }
-        adapter = LocationAdapter(ArrayList()) { location ->
-            onLocationSelected(location.first)
-        }
-        recyclerView.adapter = adapter
+        adapter.updateData(locationList.map { Pair(it.first, 0.0) })
     }
 
     private fun updateLocationList(userLocation: Location) {
-        val updatedLocationList = ArrayList<Pair<String, Double>>()
-        for ((admNm, coords) in locationList) {
-            val centerPointLocation = Location("centerPoint")
-            centerPointLocation.latitude = coords.first
-            centerPointLocation.longitude = coords.second
+        updatedLocationList = locationList.map { (name, coords) ->
+            val centerPointLocation = Location("centerPoint").apply {
+                latitude = coords.first
+                longitude = coords.second
+            }
+            val distance = userLocation.distanceTo(centerPointLocation).toDouble()
+            Pair(name, distance)
+        }.sortedBy { it.second }
 
-            val distance = userLocation.distanceTo(centerPointLocation)
-            updatedLocationList.add(Pair(admNm, distance.toDouble()))
-        }
-        updatedLocationList.sortBy { it.second }
-
-        adapter = LocationAdapter(updatedLocationList) { location ->
-            onLocationSelected(location.first)
-        }
-        recyclerView.adapter = adapter
+        adapter.updateData(updatedLocationList)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                fusedLocationClient.lastLocation
-                    .addOnSuccessListener { location: Location? ->
-                        if (location != null) {
-                            updateLocationList(location)
-                        }
-                    }
-            }
-        }
+    private fun filterLocations(query: String) {
+        val filteredList = updatedLocationList.filter { it.first.contains(query, ignoreCase = true) }
+        adapter.updateData(filteredList.map { Pair(it.first, 0.0) })
     }
 
     private fun onLocationSelected(location: String) {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra("selectedLocation", location)
-        saveSelectedLocation(location) // 사용자가 선택한 행정구역 이름 저장
+        val intent = Intent(this, MainActivity::class.java).apply {
+            putExtra("selectedLocation", location)
+        }
+        saveSelectedLocation(location)
         startActivity(intent)
         finish()
     }
