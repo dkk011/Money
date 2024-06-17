@@ -1,197 +1,291 @@
 package com.tukorea.Fearow
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.graphics.Color
-import android.location.Location
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Polygon
+import com.google.android.gms.maps.model.PolygonOptions
+import com.google.maps.android.data.geojson.GeoJsonFeature
 import com.google.maps.android.data.geojson.GeoJsonLayer
+import com.google.maps.android.data.geojson.GeoJsonMultiPolygon
 import com.google.maps.android.data.geojson.GeoJsonPolygon
-import org.json.JSONObject
+import com.google.maps.android.data.geojson.GeoJsonPolygonStyle
+import java.io.IOException
 
 class NearMeFragment : Fragment(), OnMapReadyCallback {
+
+    private lateinit var mMap: GoogleMap
     private lateinit var mapView: MapView
-    private var googleMap: GoogleMap? = null
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var buttons: List<Button>
+    private lateinit var infoTextView: TextView
+    private lateinit var selectedLocations: MutableList<Pair<String, Coordinates>>
+    private lateinit var featureMap: MutableMap<String, GeoJsonFeature>
+    private val addedPolygons = mutableListOf<Polygon>() // 추가된 위치의 폴리곤을 관리하기 위한 리스트
+
+    private var mapReady = false
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_near_me, container, false)
-        mapView = rootView.findViewById(R.id.mapView)
+        val view = inflater.inflate(R.layout.fragment_near_me, container, false)
+
+        mapView = view.findViewById(R.id.mapView)
         mapView.onCreate(savedInstanceState)
+        mapView.onResume()
+
+        infoTextView = view.findViewById(R.id.textViewTitle)
+
+        buttons = listOf(
+            view.findViewById(R.id.button1),
+            view.findViewById(R.id.button2),
+            view.findViewById(R.id.button3),
+            view.findViewById(R.id.button4)
+        )
+
+        buttons.forEachIndexed { index, button ->
+            button.setOnClickListener { onButtonClicked(index) }
+        }
+
+        arguments?.let {
+            selectedLocations = it.getSerializable("selectedLocations") as MutableList<Pair<String, Coordinates>>? ?: mutableListOf()
+        } ?: run {
+            selectedLocations = mutableListOf()
+        }
+
+        // 초기값으로 리스트 채우기
+        while (selectedLocations.size < 4) {
+            selectedLocations.add(Pair("", Coordinates(0.0, 0.0, "")))
+        }
+
+        updateButtons()
+
         mapView.getMapAsync(this)
 
-        // Initialize fusedLocationClient
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-
-        return rootView
+        return view
     }
 
-    override fun onMapReady(map: GoogleMap) {
-        googleMap = map
-        // 지도의 초기 위치를 사용자 위치로 설정
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                PERMISSION_REQUEST_LOCATION
-            )
-            return
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+        mapReady = true
+
+        try {
+            val layer = GeoJsonLayer(mMap, R.raw.siheung_boundary, requireContext())
+            addGeoJsonLayerToMap(layer)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        enableLocation()
 
-        // 사용자의 현재 위치 가져오기
-        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            location?.let {
-                val userLatLng = LatLng(location.latitude, location.longitude)
-                googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15f))
+        drawPolygonsForSavedLocations()
 
-                // GeoJSON 파일 로드 및 사용자 위치가 포함된 행정구역 식별
-                try {
-                    val inputStream = resources.openRawResource(R.raw.siheung_boundary)
-                    val geoJsonString = inputStream.bufferedReader().use { it.readText() }
-                    val geoJsonObject = JSONObject(geoJsonString)
-                    val layer = GeoJsonLayer(googleMap, geoJsonObject)
+        mMap.setOnPolygonClickListener { polygon ->
+            val feature = featureMap[polygon.id]
+            feature?.let {
+                val placeName = it.getProperty("adm_nm")
+                infoTextView.text = placeName
+            }
+        }
+    }
 
-                    // 행정 구역을 지도에 표시
-                    layer.addLayerToMap()
+    private fun addGeoJsonLayerToMap(layer: GeoJsonLayer) {
+        featureMap = mutableMapOf()
 
-                    // 각 행정 구역의 스타일 설정
-                    layer.defaultPolygonStyle.fillColor = Color.argb(50, 255, 0, 0)
-                    layer.defaultPolygonStyle.strokeWidth = 0.5F
+        for (feature in layer.features) {
+            val polygonOptions = createPolygonOptions(feature)
+            val polygon = mMap.addPolygon(polygonOptions)
+            featureMap[polygon.id] = feature
+        }
 
-                    for (feature in layer.features) {
-                        val geometry = feature.geometry
-                        if (geometry is GeoJsonPolygon) {
-                            if (isLocationInPolygon(userLatLng, geometry.coordinates)) {
-                                val singleFeatureLayer = GeoJsonLayer(googleMap, JSONObject().apply {
-                                    put("type", "FeatureCollection")
-                                    put("features", listOf(feature))
-                                })
-                                singleFeatureLayer.addLayerToMap()
-                                break
-                            }
-                        }
+        setLayerClickListener(layer)
+        layer.addLayerToMap()
+    }
+
+    private fun createPolygonOptions(feature: GeoJsonFeature): PolygonOptions {
+        val geometry = feature.geometry
+        val style = GeoJsonPolygonStyle().apply {
+            fillColor = -0x7f330100
+            strokeColor = -0x7f330100
+            strokeWidth = 5f
+        }
+
+        val polygonOptions = PolygonOptions()
+
+        when (geometry) {
+            is GeoJsonPolygon -> {
+                geometry.outerBoundaryCoordinates?.forEach { latLng ->
+                    polygonOptions.add(latLng)
+                }
+            }
+            is GeoJsonMultiPolygon -> {
+                geometry.polygons.forEach { polygon ->
+                    polygon.outerBoundaryCoordinates?.forEach { latLng ->
+                        polygonOptions.add(latLng)
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                }
+            }
+        }
+
+        polygonOptions.strokeColor(style.strokeColor)
+        polygonOptions.strokeWidth(style.strokeWidth)
+        polygonOptions.fillColor(style.fillColor)
+
+        return polygonOptions
+    }
+
+    private fun setLayerClickListener(layer: GeoJsonLayer) {
+        layer.setOnFeatureClickListener { feature ->
+            val placeName = feature.getProperty("adm_nm")
+            infoTextView.text = placeName
+
+            when (val geometry = feature.geometry) {
+                is GeoJsonPolygon -> {
+                    val center = getPolygonCenter(geometry.outerBoundaryCoordinates)
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center, 12f))
+                }
+                is GeoJsonMultiPolygon -> {
+                    // Handle multi-polygon click if needed
                 }
             }
         }
     }
 
-    private fun enableLocation() {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            googleMap?.isMyLocationEnabled = true
-            googleMap?.uiSettings?.isMyLocationButtonEnabled = true
-        }
-    }
+    private fun drawPolygonsForSavedLocations() {
+        if (!mapReady) return
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        when (requestCode) {
-            PERMISSION_REQUEST_LOCATION -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    enableLocation()
-                }
-                return
+        selectedLocations.forEach { location ->
+            if (location.first.isNotEmpty()) {
+                drawPolygonForLocation(location.first)
             }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        mapView.onResume()
+    private fun drawPolygonForLocation(locationName: String) {
+        if (!mapReady) return
+
+        try {
+            val layer = GeoJsonLayer(mMap, R.raw.siheung_boundary, requireContext())
+
+            for (feature in layer.features) {
+                if (feature.getProperty("adm_nm") == locationName) {
+                    val polygonOptions = createPolygonOptions(feature)
+                    val polygon = mMap.addPolygon(polygonOptions)
+                    addedPolygons.add(polygon) // 추가된 폴리곤 리스트에 추가
+
+                    val bounds = getPolygonBounds(polygonOptions.points)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50))
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
-    override fun onPause() {
-        super.onPause()
-        mapView.onPause()
+    private fun getPolygonCenter(points: List<LatLng>?): LatLng {
+        var latSum = 0.0
+        var lngSum = 0.0
+
+        points?.forEach { latLng ->
+            latSum += latLng.latitude
+            lngSum += latLng.longitude
+        }
+
+        val pointCount = points?.size ?: 1
+        return LatLng(latSum / pointCount, lngSum / pointCount)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        mapView.onDestroy()
+    private fun getPolygonBounds(points: List<LatLng>?): LatLngBounds {
+        val builder = LatLngBounds.builder()
+
+        points?.forEach { latLng ->
+            builder.include(latLng)
+        }
+
+        return builder.build()
     }
 
-    override fun onLowMemory() {
-        super.onLowMemory()
-        mapView.onLowMemory()
+    private fun updateButtons() {
+        buttons.forEachIndexed { index, button ->
+            if (selectedLocations[index].first.isNotEmpty()) {
+                button.text = selectedLocations[index].first
+            } else {
+                button.text = "+"
+            }
+        }
+    }
+
+    private fun onButtonClicked(index: Int) {
+        if (selectedLocations[index].first.isNotEmpty()) {
+            // 위치 삭제
+            selectedLocations[index] = Pair("", Coordinates(0.0, 0.0, ""))
+
+            // SharedPreferences에서도 삭제
+            val sharedPref = requireContext().getSharedPreferences("SelectedLocationPref", Context.MODE_PRIVATE)
+            with(sharedPref.edit()) {
+                remove("selectedLocation_$index")
+                apply()
+            }
+            // 추가된 폴리곤만 지우기
+            removeAddedPolygons()
+            drawPolygonsForSavedLocations()
+
+            // 버튼 업데이트
+            updateButtons()
+        } else {
+            // 위치 추가
+            val intent = Intent(requireContext(), LocationActivity::class.java)
+            startActivityForResult(intent, index)
+        }
+    }
+
+
+    private fun removeAddedPolygons() {
+        addedPolygons.forEach { it.remove() }
+        addedPolygons.clear()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == AppCompatActivity.RESULT_OK && data != null) {
+            val locationName = data.getStringExtra("selectedLocation") ?: return
+
+            val sharedPref = requireContext().getSharedPreferences("CenterPointPref", Context.MODE_PRIVATE)
+            val latitude = sharedPref.getFloat("${locationName}_latitude", 0.0f).toDouble()
+            val longitude = sharedPref.getFloat("${locationName}_longitude", 0.0f).toDouble()
+            val coordinates = Coordinates(latitude, longitude, locationName)
+
+            if (requestCode < selectedLocations.size) {
+                selectedLocations[requestCode] = Pair(locationName, coordinates)
+            }
+
+            removeAddedPolygons() // 추가된 폴리곤만 지우기
+            drawPolygonsForSavedLocations()
+            updateButtons()
+        }
     }
 
     companion object {
-        private const val PERMISSION_REQUEST_LOCATION = 100
-    }
-
-    private fun isLocationInPolygon(location: LatLng, polygon: List<List<LatLng>>): Boolean {
-        for (ring in polygon) {
-            if (isPointInPolygon(location, ring)) {
-                return true
-            }
+        @JvmStatic
+        fun newInstance(selectedLocations: ArrayList<Pair<String, Coordinates>>): NearMeFragment {
+            val fragment = NearMeFragment()
+            val args = Bundle()
+            args.putSerializable("selectedLocations", selectedLocations)
+            fragment.arguments = args
+            return fragment
         }
-        return false
-    }
-
-    private fun isPointInPolygon(point: LatLng, polygon: List<LatLng>): Boolean {
-        var intersectCount = 0
-        for (j in 0 until polygon.size - 1) {
-            if (rayCastIntersect(point, polygon[j], polygon[j + 1])) {
-                intersectCount++
-            }
-        }
-        return (intersectCount % 2 == 1) // odd = inside, even = outside
-    }
-
-    private fun rayCastIntersect(point: LatLng, vertex1: LatLng, vertex2: LatLng): Boolean {
-        val aY = vertex1.latitude
-        val bY = vertex2.latitude
-        val aX = vertex1.longitude
-        val bX = vertex2.longitude
-        val pY = point.latitude
-        val pX = point.longitude
-
-        if ((aY > pY && bY > pY) || (aY < pY && bY < pY) || (aX < pX && bX < pX)) {
-            return false
-        }
-        val m = (aY - bY) / (aX - bX)
-        val bee = -aX * m + aY
-        val x = (pY - bee) / m
-
-        return x > pX
     }
 }

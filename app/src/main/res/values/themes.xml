@@ -6,4 +6,7 @@
     </style>
 
     <style name="Theme.Money" parent="Base.Theme.Money" />
+    <style name="RedButton" parent="Widget.Material3.Button">
+        <item name="backgroundTint">#FF2A2A</item>
+    </style>
 </resources>

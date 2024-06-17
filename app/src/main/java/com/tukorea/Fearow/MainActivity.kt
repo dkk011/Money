@@ -8,12 +8,13 @@ import com.google.gson.JsonParser
 import com.tukorea.Fearow.databinding.ActivityMainBinding
 import java.io.InputStreamReader
 
-data class Coordinates(val latitude: Double, val longitude: Double, val locationName: String)
+data class Coordinates(val latitude: Double, val longitude: Double, val locationName: String) : java.io.Serializable
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var selectedLocation: String
+    private val selectedLocations = mutableListOf<Pair<String, Coordinates>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +23,14 @@ class MainActivity : AppCompatActivity() {
 
         val coordinates = extractCoordinatesFromJson()
         val centerPoints = calculateCenterPoints(coordinates)
+
+        // SharedPreferences에서 저장된 선택된 위치 정보를 불러옴
+        val savedSelectedLocations = getSavedSelectedLocations()
+        savedSelectedLocations.forEach { locationName ->
+            centerPoints[locationName]?.let { coordinates ->
+                selectedLocations.add(Pair(locationName, coordinates))
+            }
+        }
 
         // SharedPreferences에서 저장된 선택된 위치 정보를 불러옴
         selectedLocation = getSavedSelectedLocation()
@@ -35,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> replaceFragment(HomeFragment.newInstance(selectedLocation))
-                R.id.nav_near_me -> replaceFragment(NearMeFragment())
+                R.id.nav_near_me -> replaceFragment(NearMeFragment.newInstance(ArrayList(selectedLocations)))
                 R.id.nav_exchange_rate -> replaceFragment(ExchangeRateFragment())
                 R.id.nav_profile -> replaceFragment(ProfileFragment())
             }
@@ -101,18 +110,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun saveCenterPoints(centerPoints: Map<String, Coordinates>) {
         val sharedPref = getSharedPreferences("CenterPointPref", Context.MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            putStringSet("locationNames", centerPoints.keys)
-            for ((name, coords) in centerPoints) {
-                putFloat("${name}_latitude", coords.latitude.toFloat())
-                putFloat("${name}_longitude", coords.longitude.toFloat())
-            }
-            apply()
+        val editor = sharedPref.edit()
+        val locationNames = centerPoints.keys.toMutableSet()
+        editor.putStringSet("locationNames", locationNames)
+        for ((name, coords) in centerPoints) {
+            editor.putFloat("${name}_latitude", coords.latitude.toFloat())
+            editor.putFloat("${name}_longitude", coords.longitude.toFloat())
         }
+        editor.apply()
     }
 
     private fun getSavedSelectedLocation(): String {
         val sharedPref = getSharedPreferences("SelectedLocationPref", Context.MODE_PRIVATE)
         return sharedPref.getString("selectedLocation", "") ?: ""
+    }
+
+    private fun getSavedSelectedLocations(): List<String> {
+        val sharedPref = getSharedPreferences("SelectedLocationPref", Context.MODE_PRIVATE)
+        val locations = mutableListOf<String>()
+        for (i in 0 until 4) {
+            val location = sharedPref.getString("selectedLocation_$i", null)
+            location?.let { locations.add(it) }
+        }
+        return locations
     }
 }

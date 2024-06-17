@@ -27,6 +27,7 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".MainListActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".LocationActivity" />

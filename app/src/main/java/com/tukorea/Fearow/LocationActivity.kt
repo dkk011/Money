@@ -3,6 +3,7 @@ package com.tukorea.Fearow
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -118,10 +119,20 @@ class LocationActivity : AppCompatActivity() {
     }
 
     private fun onLocationSelected(location: String) {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            putExtra("selectedLocation", location)
+        val sharedPref = getSharedPreferences("SelectedLocationPref", Context.MODE_PRIVATE)
+        val selectedLocations = getSelectedLocations(sharedPref).toMutableList()
+        selectedLocations.add(location)
+
+        if (selectedLocations.size > 4) {
+            selectedLocations.removeAt(0) // 가장 오래된 위치 제거
         }
         saveSelectedLocation(location)
+        saveSelectedLocations(sharedPref, selectedLocations)
+
+        val intent = Intent(this, MainActivity::class.java).apply {
+            putExtra("selectedLocation", location)
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
         startActivity(intent)
         finish()
     }
@@ -130,6 +141,24 @@ class LocationActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("SelectedLocationPref", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
             putString("selectedLocation", location)
+            apply()
+        }
+    }
+
+    private fun getSelectedLocations(sharedPref: SharedPreferences): List<String> {
+        val locations = mutableListOf<String>()
+        for (i in 0 until 4) {
+            val location = sharedPref.getString("selectedLocation_$i", null)
+            location?.let { locations.add(it) }
+        }
+        return locations
+    }
+
+    private fun saveSelectedLocations(sharedPref: SharedPreferences, locations: List<String>) {
+        with(sharedPref.edit()) {
+            for (i in locations.indices) {
+                putString("selectedLocation_$i", locations[i])
+            }
             apply()
         }
     }
