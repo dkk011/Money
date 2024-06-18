@@ -24,7 +24,8 @@ class HomeFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         val locationTextView: TextView = view.findViewById(R.id.locationTextView)
-        locationTextView.text = "Selected Location: $selectedLocation"
+        val displayText = selectedLocation.substringAfter("시 ")
+        locationTextView.text = "Selected Location: $displayText"
         return view
     }
 

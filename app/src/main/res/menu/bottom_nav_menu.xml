@@ -4,7 +4,6 @@
         android:id="@+id/nav_home"
         android:icon="@drawable/ic_home"
         android:title="홈" />
-
     <item
         android:id="@+id/nav_near_me"
         android:icon="@drawable/ic_near_me"

@@ -9,17 +9,28 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:text="내 동네"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:padding="16dp" />
+
+    <ImageView
+        android:id="@+id/infoIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/textViewTitle"
+        android:layout_marginStart="285dp"
+        android:layout_marginTop="19dp"
+        android:layout_toEndOf="@id/textViewTitle"
+        android:src="@drawable/ic_info" />
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="669dp"
         android:layout_below="@id/textViewTitle"
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginTop="62dp"
         android:layout_weight="1" />
 
     <GridLayout
@@ -31,36 +42,48 @@
         android:rowCount="2"
         android:padding="5dp">
 
-        <Button
+        <android.widget.Button
             android:id="@+id/button1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:text="+"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/ripple_effect1"
+            android:layout_margin="5dp"/>
 
-        <Button
+        <android.widget.Button
             android:id="@+id/button2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:text="+"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/ripple_effect1"
+            android:layout_margin="5dp"/>
 
-        <Button
+        <android.widget.Button
             android:id="@+id/button3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:text="+"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/ripple_effect1"
+            android:layout_margin="5dp"/>
 
-        <Button
+        <android.widget.Button
             android:id="@+id/button4"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:text="+"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/ripple_effect1"
+            android:layout_margin="5dp"/>
     </GridLayout>
 </RelativeLayout>

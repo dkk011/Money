@@ -6,16 +6,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.kakao.sdk.user.UserApiClient
-import com.tukorea.Fearow.databinding.FragmentProfileBinding
 import com.bumptech.glide.Glide
+import com.kakao.sdk.user.UserApiClient
+import com.kakao.sdk.user.model.User
+import com.tukorea.Fearow.databinding.FragmentProfileBinding
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
+    private lateinit var settingsIcon: ImageView
+    private lateinit var nearMeSettingsText: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,7 +32,17 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        UserApiClient.instance.me { user, error ->
+        settingsIcon = view.findViewById(R.id.settings_icon)
+        settingsIcon.setOnClickListener {
+            showSettingsOptions()
+        }
+
+        nearMeSettingsText = view.findViewById(R.id.near_me_settings_text)
+        nearMeSettingsText.setOnClickListener {
+            navigateToNearMeFragment()
+        }
+
+        UserApiClient.instance.me { user: User?, error ->
             if (error != null) {
                 Log.e("ProfileFragment", "사용자 정보 요청 실패", error)
                 binding.profileInfo.text = "사용자 정보를 불러오지 못했습니다."
@@ -40,39 +54,24 @@ class ProfileFragment : Fragment() {
                 }
 
                 binding.profileInfo.text = """
-                    닉네임: ${user.kakaoAccount?.profile?.nickname}
-                    이메일: ${user.kakaoAccount?.email}
+                    ${user.kakaoAccount?.profile?.nickname ?: ""}
+                    ${user.kakaoAccount?.email ?: ""}
                 """.trimIndent()
             }
         }
+    }
 
-        binding.kakaoLogoutButton.setOnClickListener {
-            UserApiClient.instance.logout { error ->
-                if (error != null) {
-                    Toast.makeText(requireContext(), "로그아웃 실패 $error", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(requireContext(), "로그아웃 성공", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(requireContext(), LoginActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    startActivity(intent)
-                    requireActivity().finish()
-                }
-            }
-        }
+    private fun showSettingsOptions() {
+        val dialogFragment = SettingsOptionsDialogFragment()
+        dialogFragment.show(parentFragmentManager, "SettingsOptionsDialog")
+    }
 
-        binding.kakaoUnlinkButton.setOnClickListener {
-            UserApiClient.instance.unlink { error ->
-                if (error != null) {
-                    Toast.makeText(requireContext(), "회원 탈퇴 실패 $error", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(requireContext(), "회원 탈퇴 성공", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(requireContext(), LoginActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    startActivity(intent)
-                    requireActivity().finish()
-                }
-            }
-        }
+    private fun navigateToNearMeFragment() {
+        val nearMeFragment = NearMeFragment()
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, nearMeFragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     override fun onDestroyView() {

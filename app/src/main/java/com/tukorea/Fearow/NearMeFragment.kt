@@ -2,13 +2,16 @@ package com.tukorea.Fearow
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -28,6 +31,7 @@ import java.io.IOException
 
 class NearMeFragment : Fragment(), OnMapReadyCallback {
 
+    private lateinit var infoIcon: ImageView
     private lateinit var mMap: GoogleMap
     private lateinit var mapView: MapView
     private lateinit var buttons: List<Button>
@@ -49,6 +53,11 @@ class NearMeFragment : Fragment(), OnMapReadyCallback {
         mapView.onResume()
 
         infoTextView = view.findViewById(R.id.textViewTitle)
+        infoIcon = view.findViewById(R.id.infoIcon)
+
+        infoIcon.setOnClickListener {
+            showInfoDialog()
+        }
 
         buttons = listOf(
             view.findViewById(R.id.button1),
@@ -77,6 +86,19 @@ class NearMeFragment : Fragment(), OnMapReadyCallback {
         mapView.getMapAsync(this)
 
         return view
+    }
+
+    private fun showInfoDialog() {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_info, null)
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        dialogView.findViewById<ImageView>(R.id.closeButton).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -118,7 +140,7 @@ class NearMeFragment : Fragment(), OnMapReadyCallback {
         val geometry = feature.geometry
         val style = GeoJsonPolygonStyle().apply {
             fillColor = -0x7f330100
-            strokeColor = -0x7f330100
+            strokeColor = 0x2fFF2A2A
             strokeWidth = 5f
         }
 
@@ -182,6 +204,11 @@ class NearMeFragment : Fragment(), OnMapReadyCallback {
             for (feature in layer.features) {
                 if (feature.getProperty("adm_nm") == locationName) {
                     val polygonOptions = createPolygonOptions(feature)
+
+                    if (selectedLocations.any { it.first == locationName }) {
+                        polygonOptions.fillColor(0x4fFF2A2A) // 선택된 위치의 폴리곤 색상
+                    }
+
                     val polygon = mMap.addPolygon(polygonOptions)
                     addedPolygons.add(polygon) // 추가된 폴리곤 리스트에 추가
 
@@ -219,8 +246,11 @@ class NearMeFragment : Fragment(), OnMapReadyCallback {
 
     private fun updateButtons() {
         buttons.forEachIndexed { index, button ->
-            if (selectedLocations[index].first.isNotEmpty()) {
-                button.text = selectedLocations[index].first
+            val locationName = selectedLocations[index].first
+            val displayedText = locationName.substringAfter("시 ")
+
+            if (displayedText.isNotEmpty()) {
+                button.text = displayedText
             } else {
                 button.text = "+"
             }

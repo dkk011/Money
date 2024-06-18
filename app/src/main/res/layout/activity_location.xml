@@ -13,7 +13,7 @@
         android:padding="16dp"
         android:inputType="text" />
 
-    <Button
+    <android.widget.Button
         android:id="@+id/updateLocationButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,6 +21,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:text="주변 위치 찾기"
+        android:textColor="@android:color/white"
         android:background="@drawable/ripple_effect"
         android:clickable="true"
         android:focusable="true" />
