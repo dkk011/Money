@@ -39,11 +39,11 @@ class MainActivity : AppCompatActivity() {
         saveCenterPoints(centerPoints)
 
         // 초기 프래그먼트 설정
-        replaceFragment(HomeFragment.newInstance(selectedLocation))
+        //replaceFragment(HomeFragment.newInstance(selectedLocation))
 
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> replaceFragment(HomeFragment.newInstance(selectedLocation))
+                R.id.nav_home -> replaceFragment(BoardFragment())
                 R.id.nav_near_me -> replaceFragment(NearMeFragment.newInstance(ArrayList(selectedLocations)))
                 R.id.nav_exchange_rate -> replaceFragment(ExchangeRateFragment())
                 R.id.nav_profile -> replaceFragment(ProfileFragment())

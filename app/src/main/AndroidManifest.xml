@@ -31,6 +31,17 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".LocationActivity" />
 
+        <activity
+            android:name=".PostDetailActivity"
+            android:exported="true"/>
+
+        <activity
+            android:name=".HomeFragment"
+            android:exported="true"/>
+
+        <activity android:name=".BoardActivity"
+            android:exported="true"/>
+
         <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true">
             <intent-filter>

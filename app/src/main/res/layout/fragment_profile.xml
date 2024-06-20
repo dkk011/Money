@@ -124,9 +124,9 @@
             android:textSize="16sp" />
     </LinearLayout>
 
-    <!-- 판매내역 -->
+    <!-- 거래내역 -->
     <LinearLayout
-        android:id="@+id/selling_section"
+        android:id="@+id/deal_section"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -138,39 +138,13 @@
             android:id="@+id/selling_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_sell" />
+            android:src="@drawable/ic_deal" />
 
         <TextView
             android:id="@+id/selling_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="판매내역"
-            android:textSize="16sp"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1" />
-    </LinearLayout>
-
-    <!-- 구매내역 -->
-    <LinearLayout
-        android:id="@+id/purchase_section"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/selling_section"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <ImageView
-            android:id="@+id/purchase_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_purchase" />
-
-        <TextView
-            android:id="@+id/purchase_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="구매내역"
+            android:text="거래내역"
             android:textSize="16sp"
             android:layout_marginStart="8dp"
             android:layout_weight="1" />
@@ -182,7 +156,7 @@
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"
         app:layout_constraintBottom_toTopOf="@+id/news_title"
-        app:layout_constraintTop_toBottomOf="@+id/purchase_section" />
+        app:layout_constraintTop_toBottomOf="@+id/deal_section" />
 
     <!-- 소식 -->
     <TextView

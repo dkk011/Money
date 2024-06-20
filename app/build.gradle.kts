@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -41,6 +42,9 @@ android {
 
 dependencies {
 
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+    implementation("com.google.firebase:firebase-database-ktx")
+    implementation("com.squareup.picasso:picasso:2.71828")
     implementation ("com.google.maps.android:android-maps-utils:2.3.0")
     implementation ("com.google.android.gms:play-services-location:21.2.0")
     implementation ("com.google.android.gms:play-services-maps:18.2.0")

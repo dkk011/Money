@@ -3,13 +3,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/locationTextView"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/postTitleInput"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Location"
-        android:textSize="18sp"/>
+        android:hint="Title" />
+
+    <EditText
+        android:id="@+id/priceInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Price"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/contentInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Content" />
+
+    <EditText
+        android:id="@+id/imageUrlInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Image URL" />
+
+    <Button
+        android:id="@+id/commit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit" />
 </LinearLayout>
