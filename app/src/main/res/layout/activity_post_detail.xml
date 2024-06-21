@@ -35,9 +35,11 @@
         android:text="Price"
         android:paddingTop="4dp" />
 
-    <Button
+    <android.widget.Button
         android:id="@+id/requestTradeButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="거래 신청" />
+        android:text="거래 신청"
+        android:textColor="@color/white"
+        android:background="@drawable/ripple_effect1" />
 </LinearLayout>

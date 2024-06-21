@@ -24,7 +24,7 @@ class HomeFragment : Fragment() {
     private lateinit var currencySpinner: Spinner
     private lateinit var contentInput: EditText
     private lateinit var buttonSubmit: Button
-    private var email: String? = null
+    public var email: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -5,6 +5,13 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"/>
+
     <android.widget.Button
         android:id="@+id/buttonMyApplications"
         android:layout_width="match_parent"
@@ -31,9 +38,4 @@
         android:textColor="@android:color/white"
         android:background="@drawable/ripple_effect1" />
 
-    <FrameLayout
-        android:id="@+id/fragmentContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp"/>
 </LinearLayout>

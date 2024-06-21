@@ -15,13 +15,13 @@
         android:id="@+id/postTitleInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Title" />
+        android:hint="제목" />
 
     <EditText
         android:id="@+id/priceInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Price"
+        android:hint="가격"
         android:inputType="number" />
 
 
@@ -29,12 +29,15 @@
         android:id="@+id/contentInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Content" />
+        android:hint="내용"
+        android:layout_weight="1" />
 
 
-    <Button
+    <android.widget.Button
         android:id="@+id/commit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Submit" />
+        android:text="글쓰기"
+        android:textColor="@color/white"
+        android:background="@drawable/ripple_effect1"/>
 </LinearLayout>
