@@ -10,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="내 동네 이름(동, 읍, 면)으로 검색"
-        android:padding="16dp"
+        android:background="#E0E0E0"
+        android:padding="13dp"
         android:inputType="text" />
 
     <android.widget.Button

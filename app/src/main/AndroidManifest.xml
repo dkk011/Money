@@ -39,8 +39,19 @@
             android:name=".HomeFragment"
             android:exported="true"/>
 
-        <activity android:name=".BoardActivity"
+        <activity android:name=".BoardFragment"
             android:exported="true"/>
+
+        <activity
+            android:name=".ExchangeRateFragment"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
+        <activity android:name=".ExchangeActivity"/>
 
         <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true">

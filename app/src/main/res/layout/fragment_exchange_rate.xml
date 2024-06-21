@@ -3,11 +3,86 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center">
+    android:padding="16dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="환율"
-        android:textSize="24sp"/>
+        android:text="환율 계산기"
+        android:textSize="24sp"
+        android:layout_gravity="center"
+        android:paddingBottom="16dp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/buttonKRW"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="KRW" />
+            <Button
+                android:id="@+id/buttonUSD"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="USD" />
+            <Button
+                android:id="@+id/buttonEUR"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="EUR" />
+            <Button
+                android:id="@+id/buttonCNY"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="CNY" />
+            <Button
+                android:id="@+id/buttonGBP"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="GBP" />
+            <Button
+                android:id="@+id/buttonAUD"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="AUD" />
+            <Button
+                android:id="@+id/buttonTHB"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="THB" />
+            <Button
+                android:id="@+id/buttonVND"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="VND" />
+            <Button
+                android:id="@+id/buttonCAD"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="CAD" />
+            <Button
+                android:id="@+id/buttonHKD"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="HKD" />
+            <Button
+                android:id="@+id/buttonNZD"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="NZD" />
+            <Button
+                android:id="@+id/buttonTWD"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="TWD" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

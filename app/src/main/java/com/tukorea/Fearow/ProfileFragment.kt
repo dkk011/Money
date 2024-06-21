@@ -1,5 +1,6 @@
 package com.tukorea.Fearow
 
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -19,6 +20,7 @@ class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
     private lateinit var settingsIcon: ImageView
+    private lateinit var dealText: TextView
     private lateinit var nearMeSettingsText: TextView
 
     override fun onCreateView(
@@ -35,6 +37,11 @@ class ProfileFragment : Fragment() {
         settingsIcon = view.findViewById(R.id.settings_icon)
         settingsIcon.setOnClickListener {
             showSettingsOptions()
+        }
+
+        dealText = view.findViewById(R.id.deal_text)
+        dealText.setOnClickListener {
+            moveToApplicationFragment()
         }
 
         nearMeSettingsText = view.findViewById(R.id.near_me_settings_text)
@@ -64,6 +71,14 @@ class ProfileFragment : Fragment() {
     private fun showSettingsOptions() {
         val dialogFragment = SettingsOptionsDialogFragment()
         dialogFragment.show(parentFragmentManager, "SettingsOptionsDialog")
+    }
+
+    private fun moveToApplicationFragment() {
+        val application = com.tukorea.Fearow.Application()
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, application)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun navigateToNearMeFragment() {

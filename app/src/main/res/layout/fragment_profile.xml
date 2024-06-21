@@ -135,13 +135,13 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
-            android:id="@+id/selling_icon"
+            android:id="@+id/deal_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_deal" />
 
         <TextView
-            android:id="@+id/selling_text"
+            android:id="@+id/deal_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="거래내역"

@@ -1,0 +1,31 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/buttonMyApplications"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="내가 한 신청" />
+
+    <Button
+        android:id="@+id/buttonReceivedApplications"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="내가 받은 신청" />
+
+    <Button
+        android:id="@+id/buttonMyApplicationStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="내 신청 상태 확인" />
+
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"/>
+</LinearLayout>

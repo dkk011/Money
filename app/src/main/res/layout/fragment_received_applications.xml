@@ -1,0 +1,28 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textViewAcceptedApplications"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="수락목록"
+        android:textSize="18sp"
+        android:padding="8dp"/>
+
+    <TextView
+        android:id="@+id/textViewRejectedApplications"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="거절목록"
+        android:textSize="18sp"
+        android:padding="8dp"/>
+
+    <ListView
+        android:id="@+id/listViewReceivedApplications"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>
