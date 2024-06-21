@@ -17,7 +17,7 @@ class ExchangeActivity : AppCompatActivity() {
     private lateinit var etFrom: EditText
     private lateinit var tvTo: TextView
     private lateinit var btnExchange: Button
-    private lateinit var refreshButton: Button
+    private lateinit var refreshButton: ImageView
     private val fromTo = arrayOfNulls<String>(2)
     private var currencyRate = 0.0
 

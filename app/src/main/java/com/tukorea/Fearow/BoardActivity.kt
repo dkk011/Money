@@ -5,9 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,7 +24,12 @@ class BoardFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.activity_board, container, false)
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.activity_board, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         buttonWritePost = view.findViewById(R.id.buttonWritePost)
         postRecyclerView = view.findViewById(R.id.postRecyclerView)
@@ -60,8 +65,6 @@ class BoardFragment : Fragment() {
                 // Handle error
             }
         })
-
-        return view
     }
 
     inner class PostAdapter(private var posts: MutableList<Post>) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
@@ -73,21 +76,28 @@ class BoardFragment : Fragment() {
             private val priceView: TextView = itemView.findViewById(R.id.postPriceView)
 
             fun bind(post: Post) {
-                if (post.imageUrl.isNotEmpty()) {
-                    Picasso.get().load(post.imageUrl).into(imageView)
-                } else {
-                    imageView.setImageResource(R.drawable.placeholder_image) // Placeholder image
+                val context = imageView.context
+                val imageResId = when (post.currency) {
+                    "USD" -> R.drawable.usd_image
+                    "VND" -> R.drawable.vnd_image
+                    "CNY" -> R.drawable.cny_image
+                    "JPY" -> R.drawable.jpy_image
+                    else -> R.drawable.placeholder_image
                 }
+                imageView.setImageResource(imageResId)
+
                 titleView.text = post.title
                 contentView.text = post.content
-                priceView.text = "${post.price}원"
+                priceView.text = "${post.price} ${post.currency}"
+
                 itemView.setOnClickListener {
-                    val intent = Intent(activity, PostDetailActivity::class.java).apply {
+                    val intent = Intent(requireContext(), PostDetailActivity::class.java).apply {
                         putExtra("postId", post.postId)
                         putExtra("userId", post.userId)
                         putExtra("title", post.title)
                         putExtra("content", post.content)
                         putExtra("price", post.price)
+                        putExtra("currency", post.currency)
                         putExtra("imageUrl", post.imageUrl)
                     }
                     startActivity(intent)

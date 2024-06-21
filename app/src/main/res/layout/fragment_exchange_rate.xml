@@ -23,66 +23,101 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <Button
+            <android.widget.Button
                 android:id="@+id/buttonKRW"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="KRW" />
-            <Button
+                android:text="KRW"
+                android:textColor="@android:color/white"
+                android:background="@drawable/ripple_effect1"/>
+            <android.widget.Button
                 android:id="@+id/buttonUSD"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="USD" />
-            <Button
+                android:text="USD"
+                android:textColor="@android:color/white"
+                android:background="@drawable/ripple_effect1"
+                android:layout_marginTop="16dp"/>
+            <android.widget.Button
                 android:id="@+id/buttonEUR"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="EUR" />
-            <Button
+                android:text="EUR"
+                android:textColor="@android:color/white"
+                android:background="@drawable/ripple_effect1"
+                android:layout_marginTop="16dp"/>
+            <android.widget.Button
                 android:id="@+id/buttonCNY"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="CNY" />
-            <Button
+                android:text="CNY"
+                android:textColor="@android:color/white"
+                android:background="@drawable/ripple_effect1"
+                android:layout_marginTop="16dp"/>
+            <android.widget.Button
                 android:id="@+id/buttonGBP"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="GBP" />
-            <Button
+                android:text="GBP"
+                android:textColor="@android:color/white"
+                android:background="@drawable/ripple_effect1"
+                android:layout_marginTop="16dp"/>
+            <android.widget.Button
                 android:id="@+id/buttonAUD"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="AUD" />
-            <Button
+                android:text="AUD"
+                android:textColor="@android:color/white"
+                android:background="@drawable/ripple_effect1"
+                android:layout_marginTop="16dp"/>
+            <android.widget.Button
                 android:id="@+id/buttonTHB"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="THB" />
-            <Button
+                android:text="THB"
+                android:textColor="@android:color/white"
+                android:background="@drawable/ripple_effect1"
+                android:layout_marginTop="16dp"/>
+            <android.widget.Button
                 android:id="@+id/buttonVND"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="VND" />
-            <Button
+                android:text="VND"
+                android:textColor="@android:color/white"
+                android:background="@drawable/ripple_effect1"
+                android:layout_marginTop="16dp"/>
+            <android.widget.Button
                 android:id="@+id/buttonCAD"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="CAD" />
-            <Button
+                android:text="CAD"
+                android:textColor="@android:color/white"
+                android:background="@drawable/ripple_effect1"
+                android:layout_marginTop="16dp"/>
+            <android.widget.Button
                 android:id="@+id/buttonHKD"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="HKD" />
-            <Button
+                android:text="HKD"
+                android:textColor="@android:color/white"
+                android:background="@drawable/ripple_effect1"
+                android:layout_marginTop="16dp"/>
+            <android.widget.Button
                 android:id="@+id/buttonNZD"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="NZD" />
-            <Button
+                android:text="NZD"
+                android:textColor="@android:color/white"
+                android:background="@drawable/ripple_effect1"
+                android:layout_marginTop="16dp"/>
+            <android.widget.Button
                 android:id="@+id/buttonTWD"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="TWD" />
+                android:text="TWD"
+                android:textColor="@android:color/white"
+                android:background="@drawable/ripple_effect1"
+                android:layout_marginTop="16dp"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

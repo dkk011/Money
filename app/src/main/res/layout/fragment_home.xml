@@ -5,6 +5,12 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <Spinner
+        android:id="@+id/currencySpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/currency_array" />
+
     <EditText
         android:id="@+id/postTitleInput"
         android:layout_width="match_parent"
@@ -18,17 +24,13 @@
         android:hint="Price"
         android:inputType="number" />
 
+
     <EditText
         android:id="@+id/contentInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Content" />
 
-    <EditText
-        android:id="@+id/imageUrlInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Image URL" />
 
     <Button
         android:id="@+id/commit"

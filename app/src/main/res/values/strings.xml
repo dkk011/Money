@@ -4,4 +4,12 @@
     <string name="kakao_app_key">cc9bc4fa41b0fc0fa9bae0946c178f70</string>
     <string name="kakao_native_app_key">kakaocc9bc4fa41b0fc0fa9bae0946c178f70</string>
     <string name="google_api_key">AIzaSyCVtAaa3kGf3CoJDmmwseAvVX8W-jJLxoc</string>
+    <string name="price_format">%1$d 원</string>
+
+    <string-array name="currency_array">
+        <item>USD</item>
+        <item>VND</item>
+        <item>CNY</item>
+        <item>JPY</item>
+    </string-array>
 </resources>
