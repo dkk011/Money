@@ -5,8 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FF2A2A"
-    tools:context=".UploadPostActivity">
+    android:background="#FF2A2A">
 
     <ImageView
         android:layout_width="300dp"
@@ -22,8 +21,8 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="130dp"
-        android:layout_height="40dp"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
         android:text="내 동네를 선택하고 \n쉽게 환전해보세요!!"
         android:textAlignment="center"
         android:textColor="@android:color/white"
@@ -45,7 +44,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <ImageButton
-        android:id="@+id/btn_login"
+        android:id="@+id/imageView"
         android:layout_width="378dp"
         android:layout_height="72dp"
         android:layout_marginTop="620dp"

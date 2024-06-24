@@ -85,7 +85,7 @@ class ExchangeActivity : AppCompatActivity() {
         override fun doInBackground(vararg params: String): Double {
             val fromCurrency = params[0]
             val toCurrency = params[1]
-            val apiKey = "fca_live_BVlsyU8lY3wxaCJWCYYcfZuTfacCB3aBaZpNhLQW"
+            val apiKey = "cur_live_39EKsd4ETxSpSxXobfrfzjQRzIFiWBuF1Yl87NGF"
             val urlString = "https://api.currencyapi.com/v3/latest?apikey=$apiKey&base_currency=$fromCurrency&currencies=$toCurrency"
 
             try {

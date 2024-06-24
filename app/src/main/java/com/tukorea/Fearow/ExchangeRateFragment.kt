@@ -78,7 +78,7 @@ class ExchangeRateFragment : Fragment() {
         override fun doInBackground(vararg params: Void?): String {
             if (currency == "KRW") return "1.0"
 
-            val apiKey = "fca_live_BVlsyU8lY3wxaCJWCYYcfZuTfacCB3aBaZpNhLQW"
+            val apiKey = "cur_live_39EKsd4ETxSpSxXobfrfzjQRzIFiWBuF1Yl87NGF"
             val urlString = "https://api.currencyapi.com/v3/latest?apikey=$apiKey&base_currency=$currency&currencies=KRW"
             try {
                 val url = URL(urlString)

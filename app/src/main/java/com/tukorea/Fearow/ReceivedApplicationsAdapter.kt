@@ -4,33 +4,53 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Button
+import android.widget.BaseAdapter
+import android.widget.ImageView
 import android.widget.TextView
 
 class ReceivedApplicationsAdapter(
-    context: Context,
-    private val applications: MutableList<ApplicationItem>
-) : ArrayAdapter<ApplicationItem>(context, 0, applications) {
+    private val context: Context,
+    private var applications: List<String>
+) : BaseAdapter() {
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_received_application, parent, false)
+    private val inflater: LayoutInflater = LayoutInflater.from(context)
 
-        val applicationItem = applications[position]
-        val textView = view.findViewById<TextView>(R.id.textViewApplication)
-        val buttonAccept = view.findViewById<Button>(R.id.buttonAccept)
-        val buttonReject = view.findViewById<Button>(R.id.buttonReject)
+    override fun getCount(): Int = applications.size
 
-        textView.text = applicationItem.application
-        buttonAccept.setOnClickListener {
-            applicationItem.status = ApplicationStatus.ACCEPTED
-            notifyDataSetChanged() // 데이터 변경을 UI에 반영
+    override fun getItem(position: Int): Any = applications[position]
+
+    override fun getItemId(position: Int): Long = position.toLong()
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        val view: View
+        val holder: ViewHolder
+
+        if (convertView == null) {
+            view = inflater.inflate(R.layout.list_item_application, parent, false)
+            holder = ViewHolder()
+            holder.imageView = view.findViewById(R.id.applicationImageView)
+            holder.textView = view.findViewById(R.id.applicationTextView)
+            view.tag = holder
+        } else {
+            view = convertView
+            holder = convertView.tag as ViewHolder
         }
-        buttonReject.setOnClickListener {
-            applicationItem.status = ApplicationStatus.REJECTED
-            notifyDataSetChanged() // 데이터 변경을 UI에 반영
-        }
+
+        val applicationInfo = applications[position]
+        val parts = applicationInfo.split(" - ")
+        val title = parts[0]
+        val price = parts[1]
+        val currency = parts[2]
+        val imageResId = parts[3].toInt()
+
+        holder.textView?.text = "$title - $price $currency"
+        holder.imageView?.setImageResource(imageResId)
 
         return view
+    }
+
+    private class ViewHolder {
+        var imageView: ImageView? = null
+        var textView: TextView? = null
     }
 }

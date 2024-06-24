@@ -4,6 +4,8 @@ import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.AdapterView
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
@@ -31,6 +33,17 @@ class LoginActivity : AppCompatActivity() {
             spinner.adapter = adapter
         }
 
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedCountry = parent.getItemAtPosition(position).toString()
+                updateUIForLanguage(selectedCountry)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // 아무 것도 선택되지 않았을 때의 동작
+            }
+        }
+
         KakaoSdk.init(this, getString(R.string.kakao_app_key))
 
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
@@ -43,29 +56,38 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        binding.btnLogin.setOnClickListener {
-            //이전에 로그인 했던 토큰이 있는지 확인
+        binding.imageView.setOnClickListener {
+            // 이전에 로그인 했던 토큰이 있는지 확인
             UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
-                //토큰이 없고 에러 발생 시 에러를 로그로 찍음
+                // 토큰이 없고 에러 발생 시 에러를 로그로 찍음
                 if (error != null) {
                     Log.d("error", error.toString())
 
-                    //토큰이 없다면 카카오톡이나 카카오계정으로 연동
-
+                    // 토큰이 없다면 카카오톡이나 카카오계정으로 연동
                     if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
                         UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
                     } else {
                         UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
                     }
                 }
-                //카카오 로그인을 통해 토큰 정보를 받아오면 다음 페이지로 이동
-                //한번 로그인 하면 다음부터는 계속 바로 로그인
+                // 카카오 로그인을 통해 토큰 정보를 받아오면 다음 페이지로 이동
+                // 한번 로그인 하면 다음부터는 계속 바로 로그인
                 else if (tokenInfo != null) {
                     val intent = Intent(this, MainActivity::class.java)
                     intent.putExtra("success", "kakao")
                     startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
                 }
             }
+        }
+    }
+
+    private fun updateUIForLanguage(selectedCountry: String) {
+        if (selectedCountry == "English") {
+            binding.imageView.setImageResource(R.drawable.kakao_login_medium_wide_eng)
+            binding.textView.text = "Choose your neighborhood and exchange currency easily."
+        } else {
+            binding.imageView.setImageResource(R.drawable.kakao_login)
+            binding.textView.text = "내 동네를 선택하고\n쉽게 환전해보세요!!"
         }
     }
 }

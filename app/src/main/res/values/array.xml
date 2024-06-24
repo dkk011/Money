@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="국적">
-        <item>대한민국</item>
-        <item>미국</item>
+        <item>한국어</item>
+        <item>English</item>
     </string-array>
 </resources>
