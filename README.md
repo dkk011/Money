@@ -2,7 +2,7 @@
 
 2024 IR챌린지 레벨업 프로그램
 발표자료
-https://www.miricanvas.com/13nn6v6?mode-templateshare
+https://www.miricanvas.com/13nn6v6?mode=templateshare
 
 발표자료
 https://youtu.be/lN2x1idUNYI?sivUeFeORpA5lD1Tkd
